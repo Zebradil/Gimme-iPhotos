@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import time
 from configparser import ConfigParser
 from tempfile import NamedTemporaryFile
 from typing import Any, Dict, Iterable, Set, Union
@@ -209,6 +210,8 @@ class DownloaderApp:
                 "Downloading is completed, renaming '%s' → '%s'", fdst.name, filename
             )
             os.rename(fdst.name, filename)
+            self.logger.debug("Set modification date to %s", photo.created)
+            os.utime(filename, (time.time(), photo.created.timestamp()))
 
     def remove_missing(self, destination: str, icloud_photos: Set[str]) -> None:
         print("Checking for missing photos…", end=" ")
