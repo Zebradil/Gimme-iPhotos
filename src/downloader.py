@@ -24,7 +24,7 @@ class DownloaderApp:
 
     def __init__(self, args: Dict[str, Any]):
         self.logger = logging.getLogger("app")
-        level = logging.CRITICAL - args["verbose"] * 10
+        level = logging.CRITICAL - (args["verbose"] - 1) * 10
         if level < logging.DEBUG:
             level = logging.ERROR
         else:
