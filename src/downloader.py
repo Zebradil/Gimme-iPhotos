@@ -1,9 +1,8 @@
-import argparse
 import logging
 import os
 import shutil
 from configparser import ConfigParser
-from typing import Dict, Iterable, Set, Union
+from typing import Any, Dict, Iterable, Set, Union
 
 import click
 from pyicloud import PyiCloudService
@@ -23,9 +22,9 @@ class DownloaderApp:
         "remove": False,
     }
 
-    def __init__(self, args: argparse.Namespace):
+    def __init__(self, args: Dict[str, Any]):
         self.logger = logging.getLogger("app")
-        level = logging.CRITICAL - args.verbose * 10
+        level = logging.CRITICAL - args["verbose"] * 10
         if level < logging.DEBUG:
             level = logging.ERROR
         else:
@@ -44,13 +43,13 @@ class DownloaderApp:
         )
 
     def get_config(
-        self, args: argparse.Namespace, defaults: Dict[str, Union[str, bool, None]]
+        self, args: Dict[str, Any], defaults: Dict[str, Union[str, bool, None]]
     ) -> Dict[str, Union[str, bool, None]]:
         config = {**defaults}
 
-        if hasattr(args, "config"):
+        if "config" in args:
             cfgp = ConfigParser()
-            cfgp.read_file(args.config)
+            cfgp.read_file(args["config"])
 
             if "main" not in cfgp:
                 raise Exception("Config must contain section [main]")
@@ -63,11 +62,11 @@ class DownloaderApp:
 
         # Override values by command line arguments
         for key in config:
-            if hasattr(args, key):
+            if key in args:
                 self.logger.debug(
                     "Configuration key '%s' is override from cli arguments", key
                 )
-                config[key] = getattr(args, key)
+                config[key] = args[key]
 
         # Ensure required configuration values are set
         if not config["username"]:

@@ -35,7 +35,7 @@ def main():
     try:
         args = get_cli_args()
         logging.basicConfig(level=logging.CRITICAL)
-        DownloaderApp(args).run()
+        DownloaderApp(vars(args)).run()
         return 0
     except KeyboardInterrupt:
         print("\nAborting.")
