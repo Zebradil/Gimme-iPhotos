@@ -150,10 +150,10 @@ class DownloaderApp:
     def download_photos(
         self, api: PyiCloudService, destination: str, overwrite_existing: bool,
     ) -> Set[str]:
-        self.logger.info(
-            "Downloading all photos into '%s' while %s existing…",
-            destination,
-            "overwriting" if overwrite_existing else "skipping",
+        print(
+            "Downloading all photos into '{}' while {} existing…".format(
+                destination, "overwriting" if overwrite_existing else "skipping"
+            )
         )
 
         downloaded_count = 0
@@ -172,17 +172,17 @@ class DownloaderApp:
                     continue
                 else:
                     overwritten_count += 1
+                    self.logger.debug("Overwriting existing '%s'", photo.filename)
             download = photo.download()
             with open(filename, "wb") as fdst:
                 self.logger.debug("Downloading '%s'", photo.filename)
                 self._copyfileobj(download.raw, fdst)
             downloaded_count += 1
 
-        self.logger.info(
-            "Downloaded: %s | Skipped: %s | Total: %s",
-            downloaded_count,
-            skipped_count,
-            total_count,
+        print(
+            "Downloaded: {} | Skipped: {} | Total: {}".format(
+                downloaded_count, skipped_count, total_count
+            )
         )
 
         self.logger.debug("icloud_photos: %s", icloud_photos)
@@ -190,19 +190,26 @@ class DownloaderApp:
         return icloud_photos
 
     def remove_missing(self, destination: str, icloud_photos: Set[str]) -> None:
-        self.logger.info("Removing missing photos…")
+        print("Checking for missing photos…", end=" ")
         photos_for_removal = set()
         for entry in os.scandir(destination):
             if entry.is_file(follow_symlinks=False) and entry.path not in icloud_photos:
                 self.logger.debug("'%s' is considered for removal", entry.name)
                 photos_for_removal.add(entry)
+
+        if not photos_for_removal:
+            print("Nothing to do.")
+            return
+
         print("Missing photos ({}):".format(len(photos_for_removal)))
         for entry in photos_for_removal:
             print("\t{}".format(entry.name))
+
         if click.confirm("Proceed with removal?"):
             for entry in photos_for_removal:
                 os.unlink(entry.path)
-            self.logger.info("Removed %s files", len(photos_for_removal))
+                print(".", end="", flush=True)
+            print("\nRemoved {} files".format(len(photos_for_removal)))
         else:
             self.logger.info("Abort removal of missing photos")
 
