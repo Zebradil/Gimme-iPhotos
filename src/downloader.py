@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 from configparser import ConfigParser
+from tempfile import NamedTemporaryFile
 from typing import Any, Dict, Iterable, Set, Union
 
 import click
@@ -178,10 +179,7 @@ class DownloaderApp:
                 else:
                     overwritten_count += 1
                     self.logger.debug("Overwriting existing '%s'", photo.filename)
-            download = photo.download()
-            with open(filename, "wb") as fdst:
-                self.logger.debug("Downloading '%s'", photo.filename)
-                self._copyfileobj(download.raw, fdst, photo.size, photo.filename)
+            self.download_photo(photo, filename)
             downloaded_count += 1
 
         print(
@@ -193,6 +191,24 @@ class DownloaderApp:
         self.logger.debug("icloud_photos: %s", icloud_photos)
 
         return icloud_photos
+
+    def download_photo(self, photo, filename: str) -> None:
+        download = photo.download()
+        with NamedTemporaryFile(mode="wb", prefix=f"{filename}.", delete=False) as fdst:
+            self.logger.debug("Downloading '%s' to '%s'", photo.filename, fdst.name)
+            try:
+                self._copyfileobj(download.raw, fdst.file, photo.size, photo.filename)
+            except KeyboardInterrupt as stop:
+                # FIXME Apart from KeyboardInterrupt there might be more reasons to do clanup
+                self.logger.debug(
+                    "Downloading interrupted, removing temporary file %s", fdst.name
+                )
+                os.unlink(fdst.name)
+                raise stop
+            self.logger.debug(
+                "Downloading is completed, renaming '%s' → '%s'", fdst.name, filename
+            )
+            os.rename(fdst.name, filename)
 
     def remove_missing(self, destination: str, icloud_photos: Set[str]) -> None:
         print("Checking for missing photos…", end=" ")
