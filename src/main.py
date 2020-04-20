@@ -28,7 +28,13 @@ class DownloaderApp:
 
     def __init__(self, args: argparse.Namespace):
         self.logger = logging.getLogger("app")
-        self.logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
+        level = logging.CRITICAL - args.verbose * 10
+        if level < logging.DEBUG:
+            level = logging.ERROR
+        else:
+            level = min(level, logging.CRITICAL)
+        self.logger.setLevel(level)
+
         self.config = self.get_config(args, self.DEFAULTS)
         self.logger.debug(
             "Configuration: %s",
@@ -197,7 +203,7 @@ class DownloaderApp:
             self.logger.info("Abort removal of missing photos")
 
     def _iterator(self, iterable: Iterable) -> Iterable:
-        return tqdm(iterable) if self.logger.level > logging.DEBUG else iterable
+        return tqdm(iterable) if self.logger.level > logging.INFO else iterable
 
     @staticmethod
     def get_cli_args() -> argparse.Namespace:
@@ -209,7 +215,7 @@ class DownloaderApp:
         parser.add_argument(
             "-c", "--config", help="Configuration file", type=argparse.FileType("r")
         )
-        parser.add_argument("-v", "--verbose", action="store_true", default=False)
+        parser.add_argument("-v", "--verbose", action="count", default=0)
 
         # Arguments suitable for configuration file
         parser.add_argument("-u", "--username")
