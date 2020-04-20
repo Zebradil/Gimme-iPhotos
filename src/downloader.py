@@ -185,8 +185,8 @@ class DownloaderApp:
             downloaded_count += 1
 
         print(
-            "Downloaded: {} | Skipped: {} | Total: {}".format(
-                downloaded_count, skipped_count, total_count
+            "Downloaded: {} | Skipped: {} | Overwritten: {} | Total: {}".format(
+                downloaded_count, skipped_count, overwritten_count, total_count
             )
         )
 
