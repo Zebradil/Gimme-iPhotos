@@ -239,6 +239,9 @@ def main():
         logging.basicConfig(level=logging.INFO)
         DownloaderApp(args).run()
         return 0
+    except KeyboardInterrupt:
+        print("\nAborting.")
+        return 1
     except Exception as err:
         logging.critical(err)
         return 1
