@@ -9,6 +9,8 @@ from pyicloud import PyiCloudService
 from pyicloud.utils import get_password
 from tqdm import tqdm
 
+from utils import Copy
+
 # TODO option to create config file from cli arguments
 # TODO consider using click library instead of argparse as it is used anyways
 
@@ -161,7 +163,10 @@ class DownloaderApp:
         skipped_count = 0
         total_count = 0
         icloud_photos = set()
-        for photo in self._iterator(api.photos.all):
+        collection = api.photos.all
+        if self.logger.level > logging.INFO:
+            collection = tqdm(collection, desc="Total")
+        for photo in collection:
             total_count += 1
             filename = os.path.join(destination, photo.filename)
             icloud_photos.add(filename)
@@ -176,7 +181,7 @@ class DownloaderApp:
             download = photo.download()
             with open(filename, "wb") as fdst:
                 self.logger.debug("Downloading '%s'", photo.filename)
-                self._copyfileobj(download.raw, fdst)
+                self._copyfileobj(download.raw, fdst, photo.size, photo.filename)
             downloaded_count += 1
 
         print(
@@ -213,8 +218,11 @@ class DownloaderApp:
         else:
             self.logger.info("Abort removal of missing photos")
 
-    def _iterator(self, iterable: Iterable) -> Iterable:
-        return tqdm(iterable) if self.logger.level > logging.INFO else iterable
-
-    def _copyfileobj(self, fsrc, fdst):
-        shutil.copyfileobj(fsrc, fdst)
+    def _copyfileobj(self, fsrc, fdst, size: int = 0, desc: str = ""):
+        if self.logger.level <= logging.INFO or size <= 0:
+            shutil.copyfileobj(fsrc, fdst)
+        else:
+            with tqdm(
+                desc=desc, total=size, unit="B", unit_scale=True, unit_divisor=1024,
+            ) as t:
+                Copy.fileobj(fsrc, fdst, t.update)
