@@ -21,7 +21,9 @@ def get_cli_args() -> argparse.Namespace:
     parser.add_argument("-u", "--username")
     parser.add_argument("-p", "--password")
     parser.add_argument("-d", "--destination", help="Destination directory")
-    parser.add_argument("-s", "--skip", action="store_true", help="Skip existing files")
+    parser.add_argument(
+        "-o", "--overwrite", action="store_true", help="Overwrite existing files"
+    )
     parser.add_argument(
         "-r", "--remove", action="store_true", help="Remove missing files"
     )

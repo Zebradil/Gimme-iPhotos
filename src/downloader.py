@@ -19,7 +19,7 @@ class DownloaderApp:
         "username": None,
         "password": None,
         "destination": None,
-        "skip": True,
+        "overwrite": False,
         "remove": False,
     }
 
@@ -105,7 +105,9 @@ class DownloaderApp:
 
         api = self.connect_to_icloud(config)
 
-        icloud_photos = self.download_photos(api, config["destination"], config["skip"])
+        icloud_photos = self.download_photos(
+            api, config["destination"], config["overwrite"]
+        )
 
         if config["remove"]:
             self.remove_missing(config["destination"], icloud_photos)
@@ -147,15 +149,16 @@ class DownloaderApp:
         return api
 
     def download_photos(
-        self, api: PyiCloudService, destination: str, skip_existing: bool,
+        self, api: PyiCloudService, destination: str, overwrite_existing: bool,
     ) -> Set[str]:
         self.logger.info(
             "Downloading all photos into '%s' while %s existing…",
             destination,
-            "skipping" if skip_existing else "overwriting",
+            "overwriting" if overwrite_existing else "skipping",
         )
 
         downloaded_count = 0
+        overwritten_count = 0
         skipped_count = 0
         total_count = 0
         icloud_photos = set()
@@ -163,10 +166,13 @@ class DownloaderApp:
             total_count += 1
             filename = os.path.join(destination, photo.filename)
             icloud_photos.add(filename)
-            if skip_existing and os.path.isfile(filename):
-                skipped_count += 1
-                self.logger.debug("Skipping existing '%s'", photo.filename)
-                continue
+            if os.path.isfile(filename):
+                if not overwrite_existing:
+                    skipped_count += 1
+                    self.logger.debug("Skipping existing '%s'", photo.filename)
+                    continue
+                else:
+                    overwritten_count += 1
             download = photo.download()
             with open(filename, "wb") as fdst:
                 self.logger.debug("Downloading '%s'", photo.filename)
