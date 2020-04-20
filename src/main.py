@@ -84,14 +84,16 @@ class DownloaderApp:
 
         while True:
             isset = bool(config["destination"])
-            isdir = os.path.isdir(config["destination"])
-            writeable = os.access(config["destination"], os.W_OK | os.X_OK)
+            isdir = isset and os.path.isdir(config["destination"])
+            writeable = isset and os.access(config["destination"], os.W_OK | os.X_OK)
 
             if isset and isdir and writeable:
                 break
 
             reason = ""
-            if not isdir:
+            if not isset:
+                reason = "Destination is not set. "
+            elif not isdir:
                 reason = "Destination is not a directory. "
             elif not writeable:
                 reason = "Destination is not writeable. "
