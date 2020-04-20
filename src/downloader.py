@@ -7,6 +7,7 @@ from tempfile import NamedTemporaryFile
 from typing import Any, Dict, Iterable, Set, Union
 
 import click
+from colorama import Fore
 from pyicloud import PyiCloudService
 from pyicloud.utils import get_password
 from tqdm import tqdm
@@ -165,9 +166,12 @@ class DownloaderApp:
         skipped_count = 0
         total_count = 0
         icloud_photos = set()
-        collection = api.photos.all
-        if self.logger.level > logging.INFO:
-            collection = tqdm(collection, desc="Total")
+        collection = tqdm(
+            api.photos.all,
+            desc="Total",
+            bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.GREEN, Fore.RESET),
+            disable=self.logger.level <= logging.INFO,
+        )
         for photo in collection:
             total_count += 1
             filename = os.path.join(destination, photo.filename)
@@ -238,10 +242,13 @@ class DownloaderApp:
             self.logger.info("Abort removal of missing photos")
 
     def _copyfileobj(self, fsrc, fdst, size: int = 0, desc: str = ""):
-        if self.logger.level <= logging.INFO or size <= 0:
-            shutil.copyfileobj(fsrc, fdst)
-        else:
-            with tqdm(
-                desc=desc, total=size, unit="B", unit_scale=True, unit_divisor=1024,
-            ) as t:
-                Copy.fileobj(fsrc, fdst, t.update)
+        with tqdm(
+            desc=desc,
+            total=size,
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+            leave=False,
+            disable=self.logger.level <= logging.INFO or size <= 0,
+        ) as t:
+            Copy.fileobj(fsrc, fdst, t.update)

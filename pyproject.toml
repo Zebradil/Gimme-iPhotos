@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.8"
 pyicloud = "^0.9.6"
 tqdm = "^4.45.0"
+colorama = "^0.4.3"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
