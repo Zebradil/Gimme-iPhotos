@@ -25,6 +25,7 @@ class DownloaderApp:
         "destination": None,
         "overwrite": False,
         "remove": False,
+        "parallel": 3,
     }
 
     def __init__(self, args: Dict[str, Any]):
@@ -110,7 +111,7 @@ class DownloaderApp:
         api = self.connect_to_icloud(config)
 
         icloud_photos = self.download_photos(
-            api, config["destination"], config["overwrite"]
+            api, config["destination"], config["overwrite"], config["parallel"]
         )
 
         if config["remove"]:
@@ -159,7 +160,11 @@ class DownloaderApp:
         return api
 
     def download_photos(
-        self, api: PyiCloudService, destination: str, overwrite_existing: bool,
+        self,
+        api: PyiCloudService,
+        destination: str,
+        overwrite_existing: bool,
+        parallel: int = 3,
     ) -> Set[str]:
         print(
             "Downloading all photos into '{}' while {} existing…".format(
@@ -180,7 +185,7 @@ class DownloaderApp:
         )
         # FIXME Cancelling doesn't work well with ThreadPoolExecutor. I didn't find a way to cancel tasks if they're
         # already running. Maybe it makes sense using lower level of threading API.
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=parallel) as executor:
             try:
                 downloads = []
                 for photo in collection:

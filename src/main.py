@@ -27,6 +27,7 @@ def get_cli_args() -> argparse.Namespace:
     parser.add_argument(
         "-r", "--remove", action="store_true", help="Remove missing files"
     )
+    parser.add_argument("-n", "--num-parallel-downloads", dest="parallel", type=int)
 
     return parser.parse_args()
 
