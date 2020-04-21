@@ -1,10 +1,10 @@
 import logging
 import os
-import shutil
 import time
+from concurrent.futures import ThreadPoolExecutor, wait
 from configparser import ConfigParser
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Iterable, Set, Union
+from typing import Any, Dict, Set, Union
 
 import click
 from colorama import Fore
@@ -178,20 +178,35 @@ class DownloaderApp:
             bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.GREEN, Fore.RESET),
             disable=self.logger.level <= logging.INFO,
         )
-        for photo in collection:
-            total_count += 1
-            filename = os.path.join(destination, photo.filename)
-            icloud_photos.add(filename)
-            if os.path.isfile(filename):
-                if not overwrite_existing:
-                    skipped_count += 1
-                    self.logger.debug("Skipping existing '%s'", photo.filename)
-                    continue
-                else:
-                    overwritten_count += 1
-                    self.logger.debug("Overwriting existing '%s'", photo.filename)
-            self.download_photo(photo, filename)
-            downloaded_count += 1
+        # FIXME Cancelling doesn't work well with ThreadPoolExecutor. I didn't find a way to cancel tasks if they're
+        # already running. Maybe it makes sense using lower level of threading API.
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            try:
+                downloads = []
+                for photo in collection:
+                    total_count += 1
+                    filename = os.path.join(destination, photo.filename)
+                    icloud_photos.add(filename)
+                    if os.path.isfile(filename):
+                        if not overwrite_existing:
+                            skipped_count += 1
+                            self.logger.debug("Skipping existing '%s'", photo.filename)
+                            continue
+                        else:
+                            overwritten_count += 1
+                            self.logger.debug(
+                                "Overwriting existing '%s'", photo.filename
+                            )
+                    downloads.append(
+                        executor.submit(self.download_photo, photo, filename)
+                    )
+                    downloaded_count += 1
+                wait(downloads)
+            except KeyboardInterrupt as stop:
+                print("Stopping tasks")
+                # Make an attempt to cancel all tasks and wait for the rest which were not cancelled
+                wait([feature for feature in downloads if not feature.cancel()])
+                raise stop
 
         print(
             "Downloaded: {} | Skipped: {} | Overwritten: {} | Total: {}".format(
