@@ -145,10 +145,16 @@ class DownloaderApp:
             if not api.send_verification_code(device):
                 raise Exception("Failed to send verification code")
 
-            # TODO consider retry in case of a typo
-            code = click.prompt("Please enter validation code")
-            if not api.validate_verification_code(device, code):
-                raise Exception("Failed to verify verification code")
+            verified = False
+            while not verified:
+                code = click.prompt("Please enter validation code")
+                verified = api.validate_verification_code(device, code)
+                if verified:
+                    print("Succeed")
+                else:
+                    print(
+                        "Failed to verify verification code, retry (Ctrl-C to cancel)"
+                    )
 
         return api
 
