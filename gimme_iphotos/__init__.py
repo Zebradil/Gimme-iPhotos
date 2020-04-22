@@ -3,7 +3,7 @@ import argparse
 import logging
 import sys
 
-from downloader import DownloaderApp
+from .downloader import DownloaderApp
 
 
 def get_cli_args() -> argparse.Namespace:
@@ -76,7 +76,3 @@ def main():
     except Exception as err:
         logging.critical(err)
         return 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())

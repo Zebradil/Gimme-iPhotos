@@ -2,7 +2,6 @@ import os
 import shutil
 
 
-# As an experiment
 # The code is taken from https://stackoverflow.com/a/29967714/2227895
 class Copy:
     # differs from shutil.COPY_BUFSIZE on platforms != Windows

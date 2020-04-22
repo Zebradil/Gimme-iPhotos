@@ -1,9 +1,17 @@
 [tool.poetry]
 name = "gimme-iphotos"
-version = "0.1.0"
-description = "Fetch media from iCloud"
+version = "1.0.2"
+description = "Download photos and videos from iCloud"
 authors = ["German Lashevich <german.lashevich@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Zebradil/Gimme-iPhotos"
+packages = [
+    { include = "gimme_iphotos" }
+]
+
+[tool.poetry.scripts]
+gimme-iphotos = 'gimme_iphotos:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"

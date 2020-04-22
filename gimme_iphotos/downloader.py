@@ -12,7 +12,7 @@ from pyicloud import PyiCloudService
 from pyicloud.utils import get_password
 from tqdm import tqdm
 
-from utils import Copy
+from .utils import Copy
 
 # TODO option to create config file from cli arguments
 # TODO consider using click library instead of argparse as it is used anyways
