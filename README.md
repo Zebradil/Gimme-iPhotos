@@ -22,6 +22,10 @@ local machine.
 $ pip install gimme-iphotos
 ```
 
+```sh
+$ docker pull zebradil/gimme-iphotos
+```
+
 ## Usage
 
 ```
@@ -73,6 +77,17 @@ Without config file:
 $ # Password will be requested interactively
 $ gimme-iphotos -u john.doe@rexample.com --destination /tmp/icloud
 Enter iCloud password for john.doe@rexample.com:
+```
+
+### Docker
+
+The CLI is the same but requires mounting destination directory and config file (if needed).
+
+```sh
+$ docker run -it \
+    -v <destination>:/somedir \
+    -v ${PWD}/john.cfg:/app/ \
+    zebradil/gimme-iphotos -c john.cfg 
 ```
 
 ## License
