@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gimme-iphotos"
-version = "1.0.2"
+version = "1.0.3"
 description = "Download photos and videos from iCloud"
 authors = ["German Lashevich <german.lashevich@gmail.com>"]
 license = "MIT"
