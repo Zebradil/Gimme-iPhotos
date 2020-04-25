@@ -1,5 +1,8 @@
 # Gimme-iPhotos
 
+[![PyPI](https://img.shields.io/pypi/v/gimme-iphotos.svg)](https://pypi.python.org/pypi/gimme-iphotos)
+[![PyPI](https://img.shields.io/pypi/l/gimme-iphotos.svg)](https://opensource.org/licenses/MIT)
+
 Download media files from iCloud.
 
 This tool uses [pyicloud] to synchronize photos and videos from iCloud to your
