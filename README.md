@@ -19,8 +19,10 @@ local machine.
 ## Installation
 
 ```sh
-$ pip install gimme-iphotos
+$ pip3 install gimme-iphotos
 ```
+
+or
 
 ```sh
 $ docker pull zebradil/gimme-iphotos
