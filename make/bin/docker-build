@@ -1,0 +1,11 @@
+#/usr/bin/env bash
+# vim: set filetype=bash :
+
+set -o errexit -o pipefail -o noclobber -o nounset
+
+readonly USAGE="$(basename "$0") IMAGE -- Build docker image from the current state and tag it
+
+where:
+    IMAGE  full docker image name"
+
+docker build -t "${IMAGE}:${tag}" "${root}"
