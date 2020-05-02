@@ -30,12 +30,7 @@ class DownloaderApp:
 
     def __init__(self, args: Dict[str, Any]):
         self.logger = logging.getLogger("app")
-        level = logging.CRITICAL - (args["verbose"] - 1) * 10
-        if level < logging.DEBUG:
-            level = logging.ERROR
-        else:
-            level = min(level, logging.CRITICAL)
-        self.logger.setLevel(level)
+        self.logger.setLevel(self._verbosity_to_logging_level(args["verbose"]))
 
         self.config = self.get_config(args, self.DEFAULTS)
         self.logger.debug(
@@ -278,3 +273,21 @@ class DownloaderApp:
             disable=self.logger.level <= logging.INFO or size <= 0,
         ) as t:
             Copy.fileobj(fsrc, fdst, t.update)
+
+    @staticmethod
+    def _verbosity_to_logging_level(verbosity: int) -> int:
+        """
+        Converts verbosity (the number of -v arguments) to logging level.
+        The maximum level is CRITICAL
+        The minimum level is DEBUG
+        The default level is ERROR
+        """
+        if verbosity == 0:
+            return logging.ERROR
+
+        level = logging.CRITICAL - verbosity * 10
+
+        if level < logging.DEBUG:
+            return logging.DEBUG
+
+        return min(level, logging.CRITICAL)
