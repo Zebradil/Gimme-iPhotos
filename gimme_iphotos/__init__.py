@@ -20,10 +20,18 @@ def get_cli_args() -> argparse.Namespace:
             Configuration file.
             It's ini-like file (see configparser module docs), must contain [main] section.
             Keys are fully-named arguments, except help, config and verbose.
-            Values specified using command line arguments take precedence over values from a provided config file.""",
+            Values specified using command line arguments take precedence over values from a provided config file.
+        """,
         type=argparse.FileType("r"),
     )
-    parser.add_argument("-v", "--verbose", action="count", default=0)
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="""
+            Increase verbosity. Can be specified multiple times.  Use -vvvv to get maximum verbosity.""",
+    )
 
     # Arguments suitable for configuration file
     parser.add_argument(
