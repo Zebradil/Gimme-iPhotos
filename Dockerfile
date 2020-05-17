@@ -11,7 +11,7 @@ FROM base as builder
 
 RUN apk add --no-cache openssl-dev musl-dev libffi-dev gcc
 RUN pip install poetry
-COPY pyproject.toml poetry.lock .
+COPY pyproject.toml poetry.lock ./
 RUN poetry export -f requirements.txt > requirements.txt
 
 
