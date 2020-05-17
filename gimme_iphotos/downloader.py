@@ -225,7 +225,7 @@ class DownloaderApp:
             try:
                 self._copyfileobj(download.raw, fdst.file, photo.size, photo.filename)
             except KeyboardInterrupt as stop:
-                # FIXME Apart from KeyboardInterrupt there might be more reasons to do clanup
+                # FIXME Apart from KeyboardInterrupt there might be more reasons to do cleanup
                 self.logger.debug(
                     "Downloading interrupted, removing temporary file %s", fdst.name
                 )
