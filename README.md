@@ -91,8 +91,8 @@ The CLI is the same but requires mounting destination directory and config file 
 ```sh
 $ docker run -it \
     -v <destination>:/somedir \
-    -v ${PWD}/john.cfg:/app/ \
-    zebradil/gimme-iphotos -c john.cfg 
+    -v ${PWD}/john.cfg:/app/john.cfg \
+    zebradil/gimme-iphotos -c john.cfg
 ```
 
 ## License
