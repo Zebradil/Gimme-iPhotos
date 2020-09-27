@@ -3,6 +3,8 @@ import argparse
 import logging
 import sys
 
+import click
+
 from .downloader import DownloaderApp
 
 
@@ -78,7 +80,7 @@ def main():
         logging.basicConfig(level=logging.CRITICAL)
         DownloaderApp(vars(args)).run()
         return 0
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, click.exceptions.Abort):
         print("\nAborting.")
         return 1
     except Exception as err:
