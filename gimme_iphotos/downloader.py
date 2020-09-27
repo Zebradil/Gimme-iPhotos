@@ -122,24 +122,30 @@ class DownloaderApp:
             api = PyiCloudService(config["username"], config["password"])
 
         if api.requires_2sa:
-            print("Two-step authentication required. Your trusted devices are:")
+            print("Two-step authentication required.")
 
-            devices = api.trusted_devices
-            for i, device in enumerate(devices):
-                print(
-                    "  %s: %s"
-                    % (
-                        i,
-                        device.get(
-                            "deviceName", "SMS to %s" % device.get("phoneNumber")
-                        ),
+            if click.confirm(
+                "Have you received authentication request on any of your devices?"
+            ):
+                device = dict()
+            else:
+                print("Fallback to SMS verification.")
+                print("Your trusted devices are:")
+                devices = api.trusted_devices
+                for i, device in enumerate(devices):
+                    print(
+                        "  {}: {}".format(
+                            i,
+                            device.get(
+                                "deviceName",
+                                "SMS to {}".format(device.get("phoneNumber")),
+                            ),
+                        )
                     )
-                )
-
-            device = click.prompt("Which device would you like to use?", default=0)
-            device = devices[device]
-            if not api.send_verification_code(device):
-                raise Exception("Failed to send verification code")
+                device = click.prompt("Which device would you like to use?", default=0)
+                device = devices[device]
+                if not api.send_verification_code(device):
+                    raise Exception("Failed to send verification code")
 
             verified = False
             while not verified:
