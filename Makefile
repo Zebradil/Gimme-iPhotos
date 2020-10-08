@@ -1,12 +1,10 @@
-DOCKER_REGISTRY_HOST=docker.io
-DOCKER_USERNAME=zebradil
-DOCKER_NAME=gimme-iphotos
+DOCKER_IMAGE=zebradil/gimme-iphotos
 
 bump-version::
 	./make/bin/bump-version $(V)
 
 docker-build::
-	./make/bin/docker-build
+	./make/bin/docker-do build $(DOCKER_IMAGE)
 
 docker-push::
-	./make/bin/docker-build
+	./make/bin/docker-do push $(DOCKER_IMAGE)

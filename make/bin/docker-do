@@ -1,0 +1,37 @@
+#/usr/bin/env bash
+# vim: set filetype=bash :
+
+set -o errexit -o pipefail -o noclobber -o nounset
+
+readonly USAGE="$(basename "$0") build|push IMAGE [TAG] -- Builds or pushes docker image
+
+where:
+    IMAGE  full docker image name
+    TAG    image tag [default: version value from pyproject.toml]"
+
+
+if (( $# < 2 )) || [[ ! "$1" =~ build|push ]]
+then
+    echo "${USAGE}" >&2
+    exit 1
+fi
+
+readonly ACTION="$1"
+readonly IMAGE="$2"
+TAG="${3-}"
+
+readonly root=$(git rev-parse --show-toplevel)
+readonly pyproject="${root}/pyproject.toml"
+
+if [ -z "${TAG}" ]
+then
+    TAG=$(sed -n 's/^version = "\(.*\)"$/\1/p' $pyproject)
+fi
+
+if [ "build" = "${ACTION}" ]
+then
+    docker build -t "${IMAGE}:${TAG}" "${root}"
+elif [ "push" = "${ACTION}" ]
+then
+    docker push "${IMAGE}:${TAG}"
+fi
