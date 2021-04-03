@@ -31,7 +31,10 @@ fi
 
 if [ "build" = "${ACTION}" ]
 then
-    docker build -t "${IMAGE}:${TAG}" "${root}"
+    docker buildx build \
+           --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+           --tag "${IMAGE}:${TAG}" \
+           "${root}"
 elif [ "push" = "${ACTION}" ]
 then
     docker push "${IMAGE}:${TAG}"
