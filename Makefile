@@ -1,10 +1,12 @@
+include .bootstrap.mk
+
 DOCKER_IMAGE=zebradil/gimme-iphotos
 
-bump-version::
+bump-version:: ## Bump version to specified in V variable
 	./make/bin/bump-version $(V)
 
-docker-build::
+docker-build:: ## Build container image
 	./make/bin/docker-do build $(DOCKER_IMAGE)
 
-docker-push::
+docker-push:: ## Push container image
 	./make/bin/docker-do push $(DOCKER_IMAGE)
