@@ -3,7 +3,7 @@
 
 set -o errexit -o pipefail -o noclobber -o nounset
 
-readonly USAGE="$(basename "$0") build|push IMAGE [TAG] -- Builds or pushes docker image
+readonly USAGE="$(basename "$0") just-build|build-and-push IMAGE [TAG] -- Builds or pushes docker image
 
 where:
     IMAGE  full docker image name
@@ -28,13 +28,16 @@ then
     TAG=$(sed -n 's/^version = "\(.*\)"$/\1/p' $pyproject)
 fi
 
-if [ "build" = "${ACTION}" ]
+if [ "just-build" = "${ACTION}" ]
 then
     docker buildx build \
            --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
            --tag "${IMAGE}:${TAG}" \
            "${root}"
-elif [ "push" = "${ACTION}" ]
+elif [ "build-and-push" = "${ACTION}" ]
 then
-    docker push "${IMAGE}:${TAG}"
+    docker buildx build \
+           --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+           --tag "${IMAGE}:${TAG}" \
+           "${root}"
 fi
