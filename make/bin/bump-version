@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# vim: set filetype=bash :
+
+set -o errexit -o pipefail -o noclobber -o nounset
+
+readonly USAGE="$(basename "$0") VERSION -- Update version in pyproject.toml, commit and tag the commit.
+
+where:
+    VERSION  any value, but semver is highly recommended"
+
+
+if [ $# -ne 1 ]
+then
+    echo "${USAGE}" >&2
+    exit 1
+fi
+
+readonly VERSION="$1"
+readonly message="Bump version ${VERSION}"
+
+readonly root=$(git rev-parse --show-toplevel)
+readonly pyproject="${root}/pyproject.toml"
+
+sed -i -E 's/^version = ".*"$/version = "'"${VERSION}"'"/' "${pyproject}"
+
+git commit -m "${message}" -- "${pyproject}"
+git tag "${VERSION}"

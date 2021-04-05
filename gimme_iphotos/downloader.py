@@ -28,9 +28,9 @@ class DownloaderApp:
         "parallel": 3,
     }
 
-    def __init__(self, args: Dict[str, Any]):
+    def __init__(self, args: Dict[str, Any] = {}):
         self.logger = logging.getLogger("app")
-        self.logger.setLevel(self._verbosity_to_logging_level(args["verbose"]))
+        self.logger.setLevel(self._verbosity_to_logging_level(args.get("verbose", 0)))
 
         self.config = self.get_config(args, self.DEFAULTS)
         self.logger.debug(
