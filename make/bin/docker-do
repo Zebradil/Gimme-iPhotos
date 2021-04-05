@@ -1,5 +1,4 @@
-#/usr/bin/env bash
-# -*- mode: sh; -*-
+#!/usr/bin/env bash
 # vim: set filetype=bash :
 
 set -o errexit -o pipefail -o noclobber -o nounset
