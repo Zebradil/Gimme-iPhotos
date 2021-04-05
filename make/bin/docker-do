@@ -40,5 +40,6 @@ then
            --push \
            --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
            --tag "${IMAGE}:${TAG}" \
+           --tag "${IMAGE}:latest" \
            "${root}"
 fi
