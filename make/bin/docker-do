@@ -37,6 +37,7 @@ then
 elif [ "build-and-push" = "${ACTION}" ]
 then
     docker buildx build \
+           --push \
            --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
            --tag "${IMAGE}:${TAG}" \
            "${root}"
