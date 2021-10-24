@@ -193,8 +193,8 @@ class DownloaderApp:
         # FIXME Cancelling doesn't work well with ThreadPoolExecutor. I didn't find a way to cancel tasks if they're
         # already running. Maybe it makes sense using lower level of threading API.
         with ThreadPoolExecutor(max_workers=parallel) as executor:
+            downloads = []
             try:
-                downloads = []
                 for photo in collection:
                     total_count += 1
                     filename = self.name_photo(photo, icloud_photos, destination)
