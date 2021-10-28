@@ -25,7 +25,7 @@ class DownloaderApp:
         "destination": None,
         "overwrite": False,
         "remove": False,
-        "directory_sort": False,
+        "group_by_year_month": False,
         "parallel": 3,
     }
 
@@ -107,7 +107,7 @@ class DownloaderApp:
         api = self.connect_to_icloud(config)
 
         icloud_photos = self.download_photos(
-            api, config["destination"], config["overwrite"], config["parallel"], config["directory_sort"]
+            api, config["destination"], config["overwrite"], config["parallel"], config["group_by_year_month"]
         )
 
         if config["remove"]:
@@ -167,7 +167,7 @@ class DownloaderApp:
         destination: str,
         overwrite_existing: bool,
         parallel: int = 3,
-        directory_sort: bool = False,
+        group_by_year_month: bool = False,
     ) -> Set[str]:
         print(
             "Downloading all photos into '{}' while {} existing…".format(
@@ -193,7 +193,7 @@ class DownloaderApp:
                 downloads = []
                 for photo in collection:
                     total_count += 1
-                    if directory_sort:
+                    if group_by_year_month:
                         if photo.asset_date:
                             destination_directory = os.path.join(destination, str(photo.asset_date.year), str(photo.asset_date.month))
                         else:

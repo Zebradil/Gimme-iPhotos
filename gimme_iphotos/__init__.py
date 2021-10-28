@@ -71,11 +71,11 @@ def get_cli_args() -> argparse.Namespace:
         help="Max number of concurrent downloads. Increase this number if bandwidth is not fully utilized. Default: 3",
     )
     parser.add_argument(
-        "-s",
-        "--sort",
+        "-g",
+        "--group",
         action="store_true",
-        dest="directory_sort",
-        help="Sort the photos into year and month directories.",
+        dest="group_by_year_month",
+        help="Group the photos into year and month directories.",
     )
 
     return parser.parse_args()
