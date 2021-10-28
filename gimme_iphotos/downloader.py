@@ -107,7 +107,7 @@ class DownloaderApp:
         api = self.connect_to_icloud(config)
 
         icloud_photos = self.download_photos(
-            api, config["destination"], config["overwrite"], config["parallel"], config["group_by_year_month"]
+            api, config["destination"], config["overwrite"], config["group_by_year_month"], config["parallel"]
         )
 
         if config["remove"]:
@@ -166,8 +166,8 @@ class DownloaderApp:
         api: PyiCloudService,
         destination: str,
         overwrite_existing: bool,
+        group_by_year_month: bool,
         parallel: int = 3,
-        group_by_year_month: bool = False,
     ) -> Set[str]:
         print(
             "Downloading all photos into '{}' while {} existing…".format(
@@ -203,8 +203,14 @@ class DownloaderApp:
                         filename = os.path.join(destination, photo.filename)
 
                     if filename in icloud_photos:
+                        """If the filename has already been encountered try to
+                        rename it like so:
+                            img.jpg -> img 2.jpg -> img 3.jpg ...
+                        Photos are ordered by date added so this works across runs.
+                        Maximum rename attempts is arbitrarily set at 100.
+                        """
                         root, ext = os.path.splitext(filename)
-                        for i in range(2, 102):  # maximum number renames to try
+                        for i in range(2, 102):
                             new_filename = f"{root} {i}{ext}"
                             if new_filename not in icloud_photos:
                                 filename = new_filename
@@ -245,9 +251,9 @@ class DownloaderApp:
 
         return icloud_photos
 
-    def download_photo(self, photo, filename: str, destination: str) -> None:
+    def download_photo(self, photo, filename: str, temp_file_dir: str) -> None:
         download = photo.download()
-        tmp_prefix = os.path.join(destination, os.path.basename(filename)) + "."
+        tmp_prefix = os.path.join(temp_file_dir, os.path.basename(filename)) + "."
         with NamedTemporaryFile(mode="wb", prefix=tmp_prefix, delete=False) as fdst:
             self.logger.debug("Downloading '%s' to '%s'", photo.filename, fdst.name)
             try:
