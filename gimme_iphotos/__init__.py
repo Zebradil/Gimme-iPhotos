@@ -77,6 +77,12 @@ def get_cli_args() -> argparse.Namespace:
         dest="group_by_year_month",
         help="Group the photos into year and month directories.",
     )
+    parser.add_argument(
+        "--zero-pad",
+        action="store_true",
+        dest="group_by_year_month_zero_pad",
+        help="Zero pad months when grouping photos.",
+    )
 
     return parser.parse_args()
 

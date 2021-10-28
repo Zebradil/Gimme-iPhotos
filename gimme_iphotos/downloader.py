@@ -26,6 +26,7 @@ class DownloaderApp:
         "overwrite": False,
         "remove": False,
         "group_by_year_month": False,
+        "group_by_year_month_zero_pad": False,
         "parallel": 3,
     }
 
@@ -166,7 +167,6 @@ class DownloaderApp:
         api: PyiCloudService,
         destination: str,
         overwrite_existing: bool,
-        group_by_year_month: bool,
         parallel: int = 3,
     ) -> Set[str]:
         print(
@@ -193,32 +193,7 @@ class DownloaderApp:
                 downloads = []
                 for photo in collection:
                     total_count += 1
-                    if group_by_year_month:
-                        if photo.asset_date:
-                            destination_directory = os.path.join(destination, str(photo.asset_date.year), str(photo.asset_date.month))
-                        else:
-                            destination_directory = os.path.join(destination, "NO_DATE")
-                        filename = os.path.join(destination_directory, photo.filename)
-                    else:
-                        filename = os.path.join(destination, photo.filename)
-
-                    if filename in icloud_photos:
-                        """If the filename has already been encountered try to
-                        rename it like so:
-                            img.jpg -> img 2.jpg -> img 3.jpg ...
-                        Photos are ordered by date added so this works across runs.
-                        Maximum rename attempts is arbitrarily set at 100.
-                        """
-                        root, ext = os.path.splitext(filename)
-                        for i in range(2, 102):
-                            new_filename = f"{root} {i}{ext}"
-                            if new_filename not in icloud_photos:
-                                filename = new_filename
-                                break
-                        else:
-                            self.logger.critical("Exceeded 100 rename attempts.")
-                            break
-
+                    filename = self.name_photo(photo, icloud_photos, destination)
                     icloud_photos.add(filename)
                     if os.path.isfile(filename):
                         if not overwrite_existing:
@@ -250,6 +225,39 @@ class DownloaderApp:
         self.logger.debug("icloud_photos: %s", icloud_photos)
 
         return icloud_photos
+
+    def name_photo(self, photo, icloud_photos: set, destination: str) -> None:
+        if self.config["group_by_year_month_zero_pad"]:
+            month_format = "%02d"
+        else:
+            month_format = "%d"
+
+        if self.config["group_by_year_month"]:
+            if photo.asset_date:
+                destination_directory = os.path.join(destination,
+                                                     "%04d" % photo.asset_date.year,
+                                                     month_format % photo.asset_date.month)
+            else:
+                destination_directory = os.path.join(destination, "NO_DATE")
+            filename = os.path.join(destination_directory, photo.filename)
+        else:
+            filename = os.path.join(destination, photo.filename)
+
+        if filename in icloud_photos:
+            """If the filename has already been encountered try to
+            rename it like so:
+                img.jpg -> img 2.jpg -> img 3.jpg ...
+            Photos are ordered by date added so this works across runs.
+            Maximum rename attempts is arbitrarily set at 100.
+            """
+            root, ext = os.path.splitext(filename)
+            for i in range(2, 102):
+                new_filename = f"{root} {i}{ext}"
+                if new_filename not in icloud_photos:
+                    filename = new_filename
+                    break
+            else:
+                raise(Exception(f"Exceeded 100 files with the name {filename}."))
 
     def download_photo(self, photo, filename: str, temp_file_dir: str) -> None:
         download = photo.download()
