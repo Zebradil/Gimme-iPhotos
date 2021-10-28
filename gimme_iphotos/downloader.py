@@ -201,6 +201,18 @@ class DownloaderApp:
                         filename = os.path.join(destination_directory, photo.filename)
                     else:
                         filename = os.path.join(destination, photo.filename)
+
+                    if filename in icloud_photos:
+                        root, ext = os.path.splitext(filename)
+                        for i in range(2, 102):  # maximum number renames to try
+                            new_filename = f"{root} {i}{ext}"
+                            if new_filename not in icloud_photos:
+                                filename = new_filename
+                                break
+                        else:
+                            self.logger.critical("Exceeded 100 rename attempts.")
+                            break
+
                     icloud_photos.add(filename)
                     if os.path.isfile(filename):
                         if not overwrite_existing:
@@ -213,7 +225,7 @@ class DownloaderApp:
                                 "Overwriting existing '%s'", photo.filename
                             )
                     downloads.append(
-                        executor.submit(self.download_photo, photo, filename)
+                        executor.submit(self.download_photo, photo, filename, destination)
                     )
                     downloaded_count += 1
                 wait(downloads)
@@ -233,9 +245,10 @@ class DownloaderApp:
 
         return icloud_photos
 
-    def download_photo(self, photo, filename: str) -> None:
+    def download_photo(self, photo, filename: str, destination: str) -> None:
         download = photo.download()
-        with NamedTemporaryFile(mode="wb", prefix=f"{filename}.", delete=False) as fdst:
+        tmp_prefix = os.path.join(destination, os.path.basename(filename)) + "."
+        with NamedTemporaryFile(mode="wb", prefix=tmp_prefix, delete=False) as fdst:
             self.logger.debug("Downloading '%s' to '%s'", photo.filename, fdst.name)
             try:
                 self._copyfileobj(download.raw, fdst.file, photo.size, photo.filename)
