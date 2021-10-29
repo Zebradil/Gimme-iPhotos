@@ -1,4 +1,4 @@
-name: CI
+name: python
 
 on:
   push:
@@ -18,10 +18,6 @@ jobs:
         python-version: [ "3.7", "3.8", "3.9" ]
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Taskwarrior
-        run: |
-          sudo apt-get install -y taskwarrior
-
       - name: Check out repository
         uses: actions/checkout@v2
 
@@ -43,9 +39,6 @@ jobs:
 
       - name: List installed packages
         run: pip list
-
-      - name: Test
-        run: ./test/test.sh
 
   release:
     if: ${{ startsWith(github.event.ref, 'refs/tags/') }}
