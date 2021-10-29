@@ -70,6 +70,19 @@ def get_cli_args() -> argparse.Namespace:
         type=int,
         help="Max number of concurrent downloads. Increase this number if bandwidth is not fully utilized. Default: 3",
     )
+    parser.add_argument(
+        "-g",
+        "--group",
+        action="store_true",
+        dest="group_by_year_month",
+        help="Group the photos into year and month directories.",
+    )
+    parser.add_argument(
+        "--zero-pad",
+        action="store_true",
+        dest="group_by_year_month_zero_pad",
+        help="Zero pad months when grouping photos.",
+    )
 
     return parser.parse_args()
 

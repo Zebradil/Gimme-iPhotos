@@ -25,6 +25,8 @@ class DownloaderApp:
         "destination": None,
         "overwrite": False,
         "remove": False,
+        "group_by_year_month": False,
+        "group_by_year_month_zero_pad": False,
         "parallel": 3,
     }
 
@@ -106,7 +108,7 @@ class DownloaderApp:
         api = self.connect_to_icloud(config)
 
         icloud_photos = self.download_photos(
-            api, config["destination"], config["overwrite"], config["parallel"]
+            api, config["destination"], config["overwrite"], config["group_by_year_month"], config["parallel"]
         )
 
         if config["remove"]:
@@ -191,7 +193,7 @@ class DownloaderApp:
                 downloads = []
                 for photo in collection:
                     total_count += 1
-                    filename = os.path.join(destination, photo.filename)
+                    filename = self.name_photo(photo, icloud_photos, destination)
                     icloud_photos.add(filename)
                     if os.path.isfile(filename):
                         if not overwrite_existing:
@@ -204,7 +206,7 @@ class DownloaderApp:
                                 "Overwriting existing '%s'", photo.filename
                             )
                     downloads.append(
-                        executor.submit(self.download_photo, photo, filename)
+                        executor.submit(self.download_photo, photo, filename, destination)
                     )
                     downloaded_count += 1
                 wait(downloads)
@@ -224,9 +226,43 @@ class DownloaderApp:
 
         return icloud_photos
 
-    def download_photo(self, photo, filename: str) -> None:
+    def name_photo(self, photo, icloud_photos: set, destination: str) -> None:
+        if self.config["group_by_year_month_zero_pad"]:
+            month_format = "%02d"
+        else:
+            month_format = "%d"
+
+        if self.config["group_by_year_month"]:
+            if photo.asset_date:
+                destination_directory = os.path.join(destination,
+                                                     "%04d" % photo.asset_date.year,
+                                                     month_format % photo.asset_date.month)
+            else:
+                destination_directory = os.path.join(destination, "NO_DATE")
+            filename = os.path.join(destination_directory, photo.filename)
+        else:
+            filename = os.path.join(destination, photo.filename)
+
+        if filename in icloud_photos:
+            """If the filename has already been encountered try to
+            rename it like so:
+                img.jpg -> img 2.jpg -> img 3.jpg ...
+            Photos are ordered by date added so this works across runs.
+            Maximum rename attempts is arbitrarily set at 100.
+            """
+            root, ext = os.path.splitext(filename)
+            for i in range(2, 102):
+                new_filename = f"{root} {i}{ext}"
+                if new_filename not in icloud_photos:
+                    filename = new_filename
+                    break
+            else:
+                raise(Exception(f"Exceeded 100 files with the name {filename}."))
+
+    def download_photo(self, photo, filename: str, temp_file_dir: str) -> None:
         download = photo.download()
-        with NamedTemporaryFile(mode="wb", prefix=f"{filename}.", delete=False) as fdst:
+        tmp_prefix = os.path.join(temp_file_dir, os.path.basename(filename)) + "."
+        with NamedTemporaryFile(mode="wb", prefix=tmp_prefix, delete=False) as fdst:
             self.logger.debug("Downloading '%s' to '%s'", photo.filename, fdst.name)
             try:
                 self._copyfileobj(download.raw, fdst.file, photo.size, photo.filename)
@@ -240,7 +276,7 @@ class DownloaderApp:
             self.logger.debug(
                 "Downloading is completed, renaming '%s' → '%s'", fdst.name, filename
             )
-            os.rename(fdst.name, filename)
+            os.renames(fdst.name, filename)
             self.logger.debug("Set modification date to %s", photo.created)
             os.utime(filename, (time.time(), photo.created.timestamp()))
 

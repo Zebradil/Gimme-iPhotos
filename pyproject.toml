@@ -15,9 +15,7 @@ gimme-iphotos = 'gimme_iphotos:main'
 
 [tool.poetry.dependencies]
 python = "^3.6"
-# pyicloud = "^0.9.6"
-# Required fix is not yet released (https://github.com/picklepete/pyicloud/pull/300/)
-pyicloud-z = "^0.9.7-beta.2"
+pyicloud = "^0.10.2"
 tqdm = "^4.45.0"
 colorama = "^0.4.3"
 
