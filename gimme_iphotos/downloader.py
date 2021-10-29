@@ -108,7 +108,11 @@ class DownloaderApp:
         api = self.connect_to_icloud(config)
 
         icloud_photos = self.download_photos(
-            api, config["destination"], config["overwrite"], config["group_by_year_month"], config["parallel"]
+            api,
+            config["destination"],
+            config["overwrite"],
+            config["group_by_year_month"],
+            config["parallel"],
         )
 
         if config["remove"]:
@@ -206,7 +210,9 @@ class DownloaderApp:
                                 "Overwriting existing '%s'", photo.filename
                             )
                     downloads.append(
-                        executor.submit(self.download_photo, photo, filename, destination)
+                        executor.submit(
+                            self.download_photo, photo, filename, destination
+                        )
                     )
                     downloaded_count += 1
                 wait(downloads)
@@ -226,7 +232,7 @@ class DownloaderApp:
 
         return icloud_photos
 
-    def name_photo(self, photo, icloud_photos: set, destination: str) -> None:
+    def name_photo(self, photo, icloud_photos: set, destination: str) -> str:
         if self.config["group_by_year_month_zero_pad"]:
             month_format = "%02d"
         else:
@@ -234,9 +240,11 @@ class DownloaderApp:
 
         if self.config["group_by_year_month"]:
             if photo.asset_date:
-                destination_directory = os.path.join(destination,
-                                                     "%04d" % photo.asset_date.year,
-                                                     month_format % photo.asset_date.month)
+                destination_directory = os.path.join(
+                    destination,
+                    "%04d" % photo.asset_date.year,
+                    month_format % photo.asset_date.month,
+                )
             else:
                 destination_directory = os.path.join(destination, "NO_DATE")
             filename = os.path.join(destination_directory, photo.filename)
@@ -257,7 +265,8 @@ class DownloaderApp:
                     filename = new_filename
                     break
             else:
-                raise(Exception(f"Exceeded 100 files with the name {filename}."))
+                raise (Exception(f"Exceeded 100 files with the name {filename}."))
+        return filename
 
     def download_photo(self, photo, filename: str, temp_file_dir: str) -> None:
         download = photo.download()
