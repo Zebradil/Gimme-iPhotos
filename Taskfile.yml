@@ -1,0 +1,32 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  IMAGE_NAME: zebradil/gimme-iphotos
+  IMAGE_TAG: dev
+  # linux/arm/v7 is not working currently, issues with python packages
+  # PLATFORMS: linux/arm/v7,linux/arm64,linux/amd64
+  PLATFORMS: linux/arm64,linux/amd64
+
+tasks:
+  default: ${GOTASK_BIN:-task} --list
+
+  docker:build:
+    desc: Builds multiarch container image
+    cmds:
+      - |
+        docker buildx build \
+               --platform {{.PLATFORMS}} \
+               --tag {{.IMAGE_NAME}}/{{.IMAGE_TAG}} \
+               .
+
+  docker:build-push:
+    desc: Builds multiarch container image and pushes it to docker hub
+    cmds:
+      - |
+        docker buildx build \
+               --push \
+               --platform {{.PLATFORMS}} \
+               --tag {{.IMAGE_NAME}}/{{.IMAGE_TAG}} \
+               .
