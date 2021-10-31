@@ -35,16 +35,19 @@ $ docker pull zebradil/gimme-iphotos
 
 ```
 $ gimme-iphotos --help
-usage: gimme-iphotos [-h] [-c CONFIG] [-v] [-u USERNAME] [-p PASSWORD] [-d DESTINATION] [-o] [-r] [-n PARALLEL]
+usage: gimme-iphotos [-h] [-c CONFIG] [-v] [-u USERNAME] [-p PASSWORD] [-d DESTINATION] [-o] [-r] [-n PARALLEL] [-g] [--zero-pad]
 
 Downloads media files from iCloud
 
 optional arguments:
   -h, --help            show this help message and exit
   -c CONFIG, --config CONFIG
-                        Configuration file. It's ini-like file (see configparser module docs), must contain [main] section. Keys are fully-named arguments, except help, config and verbose.
+                        Configuration file.
+                        It's ini-like file (see configparser module docs), must contain [main] section.
+                        Keys are fully-named arguments, except help, config and verbose.
                         Values specified using command line arguments take precedence over values from a provided config file.
-  -v, --verbose
+  -v, --verbose         Increase verbosity. Can be specified multiple times.
+                        Use -vvvv to get maximum verbosity.
   -u USERNAME, --username USERNAME
                         iCloud username (email). Can be specified interactively if not set.
   -p PASSWORD, --password PASSWORD
@@ -54,7 +57,10 @@ optional arguments:
   -o, --overwrite       Overwrite existing files. Default: false.
   -r, --remove          Remove missing files. Default: false.
   -n PARALLEL, --num-parallel-downloads PARALLEL
-                        Max number of concurrent downloads. Increase this number if bandwidth is not fully utilized. Default: 3
+                        Max number of concurrent downloads.
+                        Increase this number if bandwidth is not fully utilized. Default: 3
+  -g, --group           Group the photos into year and month directories.
+  --zero-pad            Zero pad months when grouping photos.
 ```
 
 Using config file:

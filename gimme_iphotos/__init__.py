@@ -2,6 +2,7 @@
 import argparse
 import logging
 import sys
+from argparse import RawTextHelpFormatter
 
 import click
 
@@ -12,18 +13,17 @@ def get_cli_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Downloads media files from iCloud",
         argument_default=argparse.SUPPRESS,
+        formatter_class=RawTextHelpFormatter,
     )
 
     # Command line only arguments
     parser.add_argument(
         "-c",
         "--config",
-        help="""
-            Configuration file.
-            It's ini-like file (see configparser module docs), must contain [main] section.
-            Keys are fully-named arguments, except help, config and verbose.
-            Values specified using command line arguments take precedence over values from a provided config file.
-        """,
+        help="Configuration file.\n"
+        + "It's ini-like file (see configparser module docs), must contain [main] section.\n"
+        + "Keys are fully-named arguments, except help, config and verbose.\n"
+        + "Values specified using command line arguments take precedence over values from a provided config file.",
         type=argparse.FileType("r"),
     )
     parser.add_argument(
@@ -31,8 +31,8 @@ def get_cli_args() -> argparse.Namespace:
         "--verbose",
         action="count",
         default=0,
-        help="""
-            Increase verbosity. Can be specified multiple times.  Use -vvvv to get maximum verbosity.""",
+        help="Increase verbosity. Can be specified multiple times.\n"
+        + "Use -vvvv to get maximum verbosity.",
     )
 
     # Arguments suitable for configuration file
@@ -68,7 +68,8 @@ def get_cli_args() -> argparse.Namespace:
         "--num-parallel-downloads",
         dest="parallel",
         type=int,
-        help="Max number of concurrent downloads. Increase this number if bandwidth is not fully utilized. Default: 3",
+        help="Max number of concurrent downloads.\n"
+        + "Increase this number if bandwidth is not fully utilized. Default: 3",
     )
     parser.add_argument(
         "-g",
