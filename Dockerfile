@@ -1,12 +1,16 @@
 # syntax=docker/dockerfile:experimental
-FROM python:3.9.3-buster as base
+FROM python:3.9.7-buster as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_NO_CACHE_DIR=1 \
-    CRYPTOGRAPHY_DONT_BUILD_RUST=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
 WORKDIR /app
+
+RUN \
+    if [ `dpkg --print-architecture` = "armhf" ]; then \
+    printf "[global]\nextra-index-url=https://www.piwheels.org/simple\n" > /etc/pip.conf ; \
+    fi
 
 
 FROM base as builder
@@ -22,7 +26,9 @@ FROM base as final
 COPY --from=builder /app/requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.txt
+
 COPY . .
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install .
+
 ENTRYPOINT ["/usr/local/bin/gimme-iphotos"]
