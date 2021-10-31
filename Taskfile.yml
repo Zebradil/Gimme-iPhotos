@@ -18,7 +18,7 @@ tasks:
       - |
         docker buildx build \
                --platform {{.PLATFORMS}} \
-               --tag {{.IMAGE_NAME}}/{{.IMAGE_TAG}} \
+               --tag {{.IMAGE_NAME}}:{{.IMAGE_TAG}} \
                .
 
   docker:build-push:
@@ -28,5 +28,5 @@ tasks:
         docker buildx build \
                --push \
                --platform {{.PLATFORMS}} \
-               --tag {{.IMAGE_NAME}}/{{.IMAGE_TAG}} \
+               --tag {{.IMAGE_NAME}}:{{.IMAGE_TAG}} \
                .
