@@ -12,6 +12,13 @@ vars:
 tasks:
   default: ${GOTASK_BIN:-task} --list
 
+  dev:fmt:
+    desc: Formats source code
+    summary: Applies isort and black to all files under gimme_iphotos directory
+    cmds:
+      - poetry run isort --recursive gimme_iphotos
+      - poetry run black gimme_iphotos
+
   docker:build-dev:
     desc: Builds an image for the current platform without buildx
     cmds:
