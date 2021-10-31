@@ -1,0 +1,6 @@
+pre-commit:
+  parallel: true
+  commands:
+    python-fmt:
+      glob: "gimme_iphotos/*.py"
+      run: ${GOTASK_BIN:-task} dev:fmt
