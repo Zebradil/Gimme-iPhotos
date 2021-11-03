@@ -19,6 +19,21 @@ tasks:
       - poetry run isort --recursive gimme_iphotos
       - poetry run black gimme_iphotos
 
+  docker:run-dev:
+    desc: Runs dev docker container
+    summary: |-
+      Creates container from development image, mounting test directory (mount).
+      Usage example:
+
+        gimme-iphotos -c /tmp/icloud/dev.cfg
+
+    cmds:
+      - |
+        docker run -it \
+        -v ${PWD}/mount:/tmp/icloud \
+        --entrypoint bash \
+        {{.IMAGE_NAME}}:{{.IMAGE_TAG}}
+
   docker:build-dev:
     desc: Builds an image for the current platform without buildx
     cmds:
