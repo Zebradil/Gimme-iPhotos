@@ -108,11 +108,7 @@ class DownloaderApp:
         api = self.connect_to_icloud(config)
 
         icloud_photos = self.download_photos(
-            api,
-            config["destination"],
-            config["overwrite"],
-            config["group_by_year_month"],
-            config["parallel"],
+            api, config["destination"], config["overwrite"], config["parallel"],
         )
 
         if config["remove"]:
