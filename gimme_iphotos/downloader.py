@@ -129,7 +129,7 @@ class DownloaderApp:
             if click.confirm(
                 "Have you received authentication request on any of your devices?"
             ):
-                device = dict()
+                verification_function = lambda code: api.validate_2fa_code(code)
             else:
                 print("Fallback to SMS verification.")
                 print("Your trusted devices are:")
@@ -148,11 +148,15 @@ class DownloaderApp:
                 device = devices[device]
                 if not api.send_verification_code(device):
                     raise Exception("Failed to send verification code")
+                verification_function = lambda code: api.validate_verification_code(
+                    device, code
+                )
 
             verified = False
             while not verified:
                 code = click.prompt("Please enter validation code")
-                verified = api.validate_verification_code(device, code)
+                verified = verification_function(code)
+                self.logger.debug("Verification result: %s", verified)
                 if verified:
                     print("Succeed")
                 else:
