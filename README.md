@@ -95,7 +95,7 @@ Enter iCloud password for john.doe@rexample.com:
 The CLI is the same but requires mounting destination directory and config file (if needed).
 
 ```sh
-$ docker run -it \
+$ docker run --interactive --tty \
     -v <destination>:/somedir \
     -v ${PWD}/john.cfg:/app/john.cfg \
     zebradil/gimme-iphotos -c john.cfg
