@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: Set up python ${{ matrix.python-version }}
         uses: actions/setup-python@v3.0.0
@@ -48,7 +48,7 @@ jobs:
       POETRY_VERSION: '1.1.8'
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: Set up python
         uses: actions/setup-python@v3.0.0
