@@ -28,7 +28,7 @@ jobs:
 
       - name: Load cached pip packages
         id: cached-pip-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
@@ -57,7 +57,7 @@ jobs:
 
       - name: Load cached pip packages
         id: cached-pip-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ env.POETRY_VERSION }}
