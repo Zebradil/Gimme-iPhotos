@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM python:3.10.5-buster as base
+FROM python:3.11.1-buster as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
