@@ -15,7 +15,7 @@ gimme-iphotos = 'gimme_iphotos:main'
 
 [tool.poetry.dependencies]
 python = "^3.6"
-pyicloud = "^0.10.2"
+pyicloud = "^1.0.0"
 tqdm = "^4.45.0"
 colorama = "^0.4.3"
 
