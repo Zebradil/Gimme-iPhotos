@@ -63,7 +63,7 @@ jobs:
           key: ${{ env.pythonLocation }}-${{ env.POETRY_VERSION }}
 
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.2.0
+        uses: abatilo/actions-poetry@v2.3.0
         with:
           poetry-version: ${{ env.POETRY_VERSION }}
 
