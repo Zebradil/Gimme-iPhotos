@@ -22,7 +22,7 @@ colorama = "^0.4.3"
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
 isort = "^5.0.0"
-pylint = "^2.4.4"
+pylint = "^3.0.0"
 ipython = "^7.16.3"
 
 [build-system]
