@@ -47,6 +47,13 @@ def get_cli_args() -> argparse.Namespace:
         help="iCloud password. Can be specified interactively if not set.",
     )
     parser.add_argument(
+        "--cookie-directory",
+        dest="cookie_directory",
+        help="Directory to store cookie files.\n"
+        + "Cookies can be used to avoid authentication step for subsequent runs.\n"
+        + "If not set, cookies are stored in a temporary directory and usually deleted between restarts.",
+    )
+    parser.add_argument(
         "-d",
         "--destination",
         help="Destination directory. Can be specified interactively if not set.",

@@ -22,6 +22,7 @@ class DownloaderApp:
     DEFAULTS = {
         "username": None,
         "password": None,
+        "cookie_directory": None,
         "destination": None,
         "overwrite": False,
         "remove": False,
@@ -119,9 +120,15 @@ class DownloaderApp:
     ) -> PyiCloudService:
         self.logger.info("Connecting to iCloud…")
         if config["password"] == "":
-            api = PyiCloudService(config["username"])
+            api = PyiCloudService(
+                config["username"], cookie_directory=config["cookie_directory"]
+            )
         else:
-            api = PyiCloudService(config["username"], config["password"])
+            api = PyiCloudService(
+                config["username"],
+                password=config["password"],
+                cookie_directory=config["cookie_directory"],
+            )
 
         if api.requires_2sa:
             print("Two-step authentication required.")
@@ -193,8 +200,8 @@ class DownloaderApp:
         # FIXME Cancelling doesn't work well with ThreadPoolExecutor. I didn't find a way to cancel tasks if they're
         # already running. Maybe it makes sense using lower level of threading API.
         with ThreadPoolExecutor(max_workers=parallel) as executor:
+            downloads = []
             try:
-                downloads = []
                 for photo in collection:
                     total_count += 1
                     filename = self.name_photo(photo, icloud_photos, destination)
