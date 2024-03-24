@@ -1,5 +1,17 @@
 # Gimme-iPhotos
 
+## 🪦 Discontinued
+
+This project is no longer maintained. Check https://github.com/icloud-photos-downloader/icloud_photos_downloader instead.
+
+I have not been using iCloud and Apple devices since 2021 and I do not plan to.
+This project was started to first off-load my photos from iCloud and then migrate out of iCloud completely.
+
+Probably, it doesn't make sense to fork or attempt to recover it, as https://github.com/picklepete/pyicloud, on which Gimme-iPhotos relies is not maintained for a couple of years as well.
+
+
+## Overview
+
 [![PyPI](https://img.shields.io/pypi/v/gimme-iphotos.svg)](https://pypi.python.org/pypi/gimme-iphotos)
 [![PyPI](https://img.shields.io/pypi/l/gimme-iphotos.svg)](https://opensource.org/licenses/MIT)
 
@@ -15,7 +27,7 @@ local machine.
   - skipping files which exist locally
   - removing local files which were removed from the cloud
 - Reads configuration from ini-file
-- Stores password in keychain (provided by [pyicloud])
+- Stores password in the keychain (provided by [pyicloud])
 - Supports two-factor authentication
 - Shows nice progress bars (thanks to [tqdm])
 
@@ -92,7 +104,7 @@ Enter iCloud password for john.doe@rexample.com:
 
 ### Docker
 
-The CLI is the same but requires mounting destination directory and config file (if needed).
+The CLI is the same but requires mounting the destination directory and config file (if needed).
 
 ```sh
 $ docker run --interactive --tty \
